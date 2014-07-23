@@ -7,11 +7,12 @@ import com.sysgears.example.domain._
 import java.text.{ParseException, SimpleDateFormat}
 import java.util.Date
 import net.liftweb.json.Serialization._
-import net.liftweb.json.{Serialization, DateFormat, Formats}
+import net.liftweb.json.{DateFormat, Formats}
 import scala.Some
 import spray.http._
 import spray.httpx.unmarshalling._
 import spray.routing._
+import com.sysgears.example.domain.CustomerConversions._
 
 /**
  * REST Service actor.
@@ -31,22 +32,6 @@ trait RestService extends HttpService with SLF4JLogging {
   val customerService = new CustomerDAO
 
   implicit val executionContext = actorRefFactory.dispatcher
-
-  implicit val liftJsonFormats = new Formats {
-    val dateFormat = new DateFormat {
-      val sdf = new SimpleDateFormat("yyyy-MM-dd")
-
-      def parse(s: String): Option[Date] = try {
-        Some(sdf.parse(s))
-      } catch {
-        case e: Exception => None
-      }
-
-      def format(d: Date): String = sdf.format(d)
-    }
-  }
-
-  implicit def HttpEntityToCustomer(httpEntity: HttpEntity) = Serialization.read[Customer](httpEntity.asString(HttpCharsets.`UTF-8`))
 
   implicit val string2Date = new FromStringDeserializer[Date] {
     def apply(value: String) = {
