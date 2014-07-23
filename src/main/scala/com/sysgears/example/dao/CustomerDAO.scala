@@ -14,7 +14,7 @@ import slick.jdbc.meta.MTable
 class CustomerDAO extends Configuration {
 
   // init Database instance
-  private val db = Database.forURL(url = "jdbc:mysql://%s:%d/%s".format(dbHost, dbPort, dbName),
+  private val db = Database.forURL(url = s"jdbc:mysql://$dbHost:$dbPort/$dbName",
     user = dbUser, password = dbPassword, driver = "com.mysql.jdbc.Driver")
 
   // create tables if not exist
@@ -73,7 +73,7 @@ class CustomerDAO extends Configuration {
     try {
       db.withTransaction {
         val query = Customers.where(_.id === id)
-        val customers = query.run.asInstanceOf[List[Customer]]
+        val customers = query.run.asInstanceOf[Vector[Customer]]
         customers.size match {
           case 0 =>
             Left(notFoundError(id))
@@ -150,7 +150,7 @@ class CustomerDAO extends Configuration {
    * @return database error description
    */
   protected def databaseError(e: SQLException) =
-    Failure("%d: %s".format(e.getErrorCode, e.getMessage), FailureType.DatabaseFailure)
+    Failure(s"${e.getErrorCode}: ${e.getMessage}", FailureType.DatabaseFailure)
 
   /**
    * Produce customer not found error description.
@@ -159,5 +159,5 @@ class CustomerDAO extends Configuration {
    * @return not found error description
    */
   protected def notFoundError(customerId: Long) =
-    Failure("Customer with id=%d does not exist".format(customerId), FailureType.NotFound)
+    Failure(s"Customer with id=$customerId does not exist", FailureType.NotFound)
 }

@@ -1,6 +1,10 @@
 package com.sysgears.example.domain
 
 import scala.slick.driver.MySQLDriver.simple._
+import spray.http.{HttpCharsets, HttpEntity}
+import net.liftweb.json.{DateFormat, Formats, Serialization}
+import java.text.SimpleDateFormat
+import java.util.Date
 
 /**
  * Customer entity.

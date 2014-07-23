@@ -7,7 +7,7 @@ import com.sysgears.example.domain._
 import java.text.{ParseException, SimpleDateFormat}
 import java.util.Date
 import net.liftweb.json.Serialization._
-import net.liftweb.json.{DateFormat, Formats}
+import net.liftweb.json.{Serialization, DateFormat, Formats}
 import scala.Some
 import spray.http._
 import spray.httpx.unmarshalling._
@@ -46,6 +46,8 @@ trait RestService extends HttpService with SLF4JLogging {
     }
   }
 
+  implicit def HttpEntityToCustomer(httpEntity: HttpEntity) = Serialization.read[Customer](httpEntity.asString(HttpCharsets.`UTF-8`))
+
   implicit val string2Date = new FromStringDeserializer[Date] {
     def apply(value: String) = {
       val sdf = new SimpleDateFormat("yyyy-MM-dd")
@@ -71,14 +73,11 @@ trait RestService extends HttpService with SLF4JLogging {
   val rest = respondWithMediaType(MediaTypes.`application/json`) {
     path("customer") {
       post {
-        entity(Unmarshaller(MediaTypes.`application/json`) {
-          case httpEntity: HttpEntity =>
-            read[Customer](httpEntity.asString(HttpCharsets.`UTF-8`))
-        }) {
+        entity(as[Customer]) {
           customer: Customer =>
             ctx: RequestContext =>
               handleRequest(ctx, StatusCodes.Created) {
-                log.debug("Creating customer: %s".format(customer))
+                log.debug(s"Creating customer: $customer")
                 customerService.create(customer)
               }
         }
@@ -88,7 +87,7 @@ trait RestService extends HttpService with SLF4JLogging {
             searchParameters: CustomerSearchParameters => {
               ctx: RequestContext =>
                 handleRequest(ctx) {
-                  log.debug("Searching for customers with parameters: %s".format(searchParameters))
+                  log.debug(s"Searching for customers with parameters: $searchParameters")
                   customerService.search(searchParameters)
                 }
             }
@@ -98,14 +97,11 @@ trait RestService extends HttpService with SLF4JLogging {
       path("customer" / LongNumber) {
         customerId =>
           put {
-            entity(Unmarshaller(MediaTypes.`application/json`) {
-              case httpEntity: HttpEntity =>
-                read[Customer](httpEntity.asString(HttpCharsets.`UTF-8`))
-            }) {
+            entity(as[Customer]) {
               customer: Customer =>
                 ctx: RequestContext =>
                   handleRequest(ctx) {
-                    log.debug("Updating customer with id %d: %s".format(customerId, customer))
+                    log.debug(s"Updating customer with id $customerId: $customer")
                     customerService.update(customerId, customer)
                   }
             }
@@ -113,14 +109,14 @@ trait RestService extends HttpService with SLF4JLogging {
             delete {
               ctx: RequestContext =>
                 handleRequest(ctx) {
-                  log.debug("Deleting customer with id %d".format(customerId))
+                  log.debug(s"Deleting customer with id $customerId")
                   customerService.delete(customerId)
                 }
             } ~
             get {
               ctx: RequestContext =>
                 handleRequest(ctx) {
-                  log.debug("Retrieving customer with id %d".format(customerId))
+                  log.debug(s"Retrieving customer with id $customerId")
                   customerService.get(customerId)
                 }
             }
