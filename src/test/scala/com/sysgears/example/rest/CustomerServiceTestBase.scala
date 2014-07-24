@@ -21,7 +21,7 @@ trait CustomerServiceTestBase extends Specification with Specs2RouteTest with Ht
 
   val customerLink = "/customer"
 
-  // connect the DSL to the test ActorSystem
+  // connects the DSL to the test ActorSystem
   implicit def actorRefFactory = system
 
   val spec = this
@@ -47,6 +47,7 @@ trait CustomerServiceTestBase extends Specification with Specs2RouteTest with Ht
     }
   }
 
+  // converts responses from the service
   implicit def HttpEntityToListOfCustomers(httpEntity: HttpEntity) = Serialization.read[List[Customer]](httpEntity.asString(HttpCharsets.`UTF-8`))
 
   implicit def HttpEntityToErrors(httpEntity: HttpEntity) = Serialization.read[Map[String, String]](httpEntity.asString(HttpCharsets.`UTF-8`))
