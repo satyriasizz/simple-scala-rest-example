@@ -7,8 +7,6 @@ import com.sysgears.example.domain._
 import java.text.{ParseException, SimpleDateFormat}
 import java.util.Date
 import net.liftweb.json.Serialization._
-import net.liftweb.json.{DateFormat, Formats}
-import scala.Some
 import spray.http._
 import spray.httpx.unmarshalling._
 import spray.routing._
@@ -31,7 +29,7 @@ trait RestService extends HttpService with SLF4JLogging {
 
   val customerService = new CustomerDAO
 
-  implicit val executionContext = actorRefFactory.dispatcher
+  lazy implicit val executionContext = actorRefFactory.dispatcher
 
   implicit val string2Date = new FromStringDeserializer[Date] {
     def apply(value: String) = {
@@ -39,7 +37,7 @@ trait RestService extends HttpService with SLF4JLogging {
       try Right(sdf.parse(value))
       catch {
         case e: ParseException => {
-          Left(MalformedContent("'%s' is not a valid Date value" format (value), e))
+          Left(MalformedContent(s"'${value}' is not a valid Date value", e))
         }
       }
     }
