@@ -1,5 +1,4 @@
-import AssemblyKeys._
-import io.gatling.sbt.GatlingPlugin
+import sbtassembly.Plugin._
 
 name := "rest"
 
