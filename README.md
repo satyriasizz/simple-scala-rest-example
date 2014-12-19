@@ -5,4 +5,4 @@ simple-scala-rest-example
 
 [Integration Testing of RESTful Service Using Spray-testkit](http://sysgears.com/articles/scala-rest-api-integration-testing-with-spray-testkit/).
 
-[Load Testing of RESTful service using Gatling 2](http://sysgears.com/articles/load-testing-using-gatling-2/).
+[RESTful Service Load Testing Using Gatling 2](http://sysgears.com/articles/restful-service-load-testing-using-gatling-2/).
